@@ -50,7 +50,7 @@ func (s *InaprocService) Create(
 		)
 	}
 
-	return s.Repository.Create(data)
+	return nil
 }
 
 func (s *InaprocService) FindAll() ([]models.InaprocOrder, error) {
@@ -146,6 +146,6 @@ func (s *InaprocService) Delete(id uint,)error{
 		)
 	}
 
-	return  s.Repository.Delete(id)
+	return  nil
 }
 

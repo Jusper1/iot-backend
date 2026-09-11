@@ -115,6 +115,7 @@ func (h *InaprocHandler) Update(c *gin.Context){
 			"message":"ID tidak valid",	
 			"error":   "ID harus berupa angka lebih dari 0",
 		})
+		return
 	}
 
 	var data models.InaprocOrder
@@ -138,20 +139,6 @@ func (h *InaprocHandler) Update(c *gin.Context){
 		return
 	}
 
-	if err := h.Service.Update(uint(id), &data); err != nil {
-
-		statusCode := http.StatusBadRequest
-
-		if err.Error() == "data inaproc tidak ditemukan" {
-			statusCode = http.StatusNotFound
-		}
-
-		c.JSON(statusCode, gin.H{
-			"success": false,
-			"message": err.Error(),
-		})
-		return
-	}
 
 	updatedData, err := h.Service.FindByID(uint(id))
 
@@ -176,7 +163,7 @@ func (h *InaprocHandler) Delete(c *gin.Context) {
 
 	id, err := strconv.ParseUint(idParam, 10, 64)
 
-	if err != nil {
+	if err != nil || id == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success":false,
 			"message":"ID tidak valid",

@@ -1,12 +1,10 @@
 package models
 
 import (
-	
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
 	"time"
-
 )
 
 type Date string
@@ -49,6 +47,15 @@ func (d *Date) UnmarshalJSON (data []byte) error {
 
 	return nil
 }
+
+func (d Date) MarshalJSON() ([]byte, error) {
+	if d == "" {
+		return []byte("null"), nil
+	}
+
+	return json.Marshal(string(d))
+}
+
 
 func (d Date) Value() (driver.Value, error) {
 	if d == "" {
@@ -108,7 +115,7 @@ func (d *Date) Scan(value interface{}) error {
 }
 
 type InaprocOrder struct {
-	ID uint `json:"id" gorm:"primaryKey"`
+	ID uint `json:"-" gorm:"primaryKey;autoIncrement"`
 
 	Kode			  string  `json:"kode"`
 	NamaPic			  string  `json:"nama_pic"`
@@ -119,13 +126,13 @@ type InaprocOrder struct {
 	Qty				  int	  `json:"qty"`
 	Status            string  `json:"status"`
 	HargaPPN          float64 `json:"harga_ppn"`
-	TglPesanan        *time.Time `json:"tgl_pesanan"`
-	TglBAST           *time.Time `json:"tgl_bast"`
+	TglPesanan        Date `json:"tgl_pesanan" gorm:"type:date"`
+	TglBAST           Date `json:"tgl_bast" gorm:"type:date"`
 	NoBAST            string  `json:"no_bast"`
 	NoInvoiceKUT      string  `json:"no_invoice_kut"`
 	NSFP              string  `json:"nsfp"`
 	JumlahUangMasuk   float64 `json:"jumlah_uang_masuk"`
-	TglUangMasuk      *time.Time `json:"tgl_uang_masuk"`
+	TglUangMasuk      Date `json:"tgl_uang_masuk" gorm:"type:date"`
 	Rekening          string  `json:"rekening"`
 	NoInvoiceInaproc  string  `json:"no_invoice_inaproc"`
 	KodeBayar         string  `json:"kode_bayar"`
