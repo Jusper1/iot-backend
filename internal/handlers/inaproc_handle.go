@@ -77,10 +77,11 @@ func (h *InaprocHandler) FindByID(c *gin.Context){
 
 	id, err := strconv.ParseUint(idParam, 10, 64)
 
-	if err != nil {
+	if err != nil || id == 0{
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success":false,
 			"message":"ID Tidak Valid",
+			"error":   "ID harus berupa angka lebih dari 0",
 		})
 		return
 	}
@@ -91,13 +92,13 @@ func (h *InaprocHandler) FindByID(c *gin.Context){
 		c.JSON(http.StatusNotFound, gin.H{
 			"success":false,
 			"message":"Data Inaproc tidak berhasil ditemukan",
-			"data":data,
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"success":true,
+		"message": "Data Inaproc berhasil ditemukan",
 		"data":data,
 	})
 }
@@ -108,10 +109,11 @@ func (h *InaprocHandler) Update(c *gin.Context){
 
 	id,err :=strconv.ParseUint(idParam, 10, 64)
 
-	if err != nil{
+	if err != nil || id== 0{
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success":false,
 			"message":"ID tidak valid",	
+			"error":   "ID harus berupa angka lebih dari 0",
 		})
 	}
 
@@ -132,6 +134,21 @@ func (h *InaprocHandler) Update(c *gin.Context){
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success":false,
 			"message":err.Error(),
+		})
+		return
+	}
+
+	if err := h.Service.Update(uint(id), &data); err != nil {
+
+		statusCode := http.StatusBadRequest
+
+		if err.Error() == "data inaproc tidak ditemukan" {
+			statusCode = http.StatusNotFound
+		}
+
+		c.JSON(statusCode, gin.H{
+			"success": false,
+			"message": err.Error(),
 		})
 		return
 	}
@@ -167,12 +184,18 @@ func (h *InaprocHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	err = h.Service.Delete(uint(id))
-
-	if err != nil {
+	if err := h.Service.Delete(uint(id)); err != nil {
+	if err.Error() == "data inaproc tidak ditemukan" {
 		c.JSON(http.StatusNotFound, gin.H{
 			"success":false,
 			"message":err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": err.Error(),
 		})
 		return
 	}
