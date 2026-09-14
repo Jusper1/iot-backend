@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"gorm.io/gorm"
-	"fmt"
+	// "fmt"
 
 	"iot-backend/internal/models"
 )
@@ -21,8 +21,8 @@ func (r *InaprocRepository) Create(
 	data *models.InaprocOrder,
 ) error {
 
-	fmt.Println("DEBUG ID:", data.ID)
-	fmt.Println("DEBUG KODE:", data.Kode)
+	// fmt.Println("DEBUG ID:", data.ID)
+	// fmt.Println("DEBUG KODE:", data.Kode)
 	return r.DB.Create(data).Error
 }
 

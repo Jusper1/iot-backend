@@ -49,6 +49,10 @@ func main() {
 			inaprocService,
 		)
 
+	inaprocExcelHandler :=
+		handlers.NewInaprocExcelHandler(
+			inaprocService,
+		)
 
 
 	router := gin.Default()
@@ -70,9 +74,12 @@ func main() {
 
 	inaproc.POST("", inaprocHandler.Create)
 	inaproc.GET("", inaprocHandler.FindAll)
+	inaproc.GET("/export",inaprocExcelHandler.Export)
+	inaproc.POST("/import",inaprocExcelHandler.Import)
 	inaproc.GET("/:id", inaprocHandler.FindByID)
 	inaproc.PUT("/:id", inaprocHandler.Update)
 	inaproc.DELETE("/:id", inaprocHandler.Delete)
+
 
 	port := os.Getenv("APP_PORT")
 

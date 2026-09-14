@@ -115,7 +115,7 @@ func (d *Date) Scan(value interface{}) error {
 }
 
 type InaprocOrder struct {
-	ID uint `json:"-" gorm:"primaryKey;autoIncrement"`
+	ID uint `json:"id" gorm:"primaryKey"`
 
 	Kode			  string  `json:"kode"`
 	NamaPic			  string  `json:"nama_pic"`
