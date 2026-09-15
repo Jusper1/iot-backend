@@ -28,6 +28,9 @@ func main() {
 	inaprocRepository :=
 		repositories.NewInaprocRepository(db)
 
+	manualRepository :=
+		repositories.NewManualRepository(db)
+
 	// SERVICE
 	authService :=
 		services.NewAuthService(
@@ -39,6 +42,8 @@ func main() {
 		services.NewInaprocService(
 			inaprocRepository,
 		)
+
+	manualService := services.NewManualService(manualRepository)
 
 	// HANDLER
 	authHandler :=
@@ -53,6 +58,8 @@ func main() {
 		handlers.NewInaprocExcelHandler(
 			inaprocService,
 		)
+
+	manualHandler := handlers.NewManualHandler(manualService)
 
 
 	router := gin.Default()
@@ -71,7 +78,7 @@ func main() {
 	api.Use(middleware.JWTAuth())
 
 	inaproc := api.Group("/inaproc")
-
+{
 	inaproc.POST("", inaprocHandler.Create)
 	inaproc.GET("", inaprocHandler.FindAll)
 	inaproc.GET("/export",inaprocExcelHandler.Export)
@@ -79,7 +86,16 @@ func main() {
 	inaproc.GET("/:id", inaprocHandler.FindByID)
 	inaproc.PUT("/:id", inaprocHandler.Update)
 	inaproc.DELETE("/:id", inaprocHandler.Delete)
+}
 
+	manualRoutes := api.Group("/pemesanan-manual")
+{
+	manualRoutes.POST("", manualHandler.Create)
+	manualRoutes.GET("", manualHandler.GetAll)
+	manualRoutes.GET("/:id", manualHandler.GetByID)
+	manualRoutes.PUT("/:id", manualHandler.Update)
+	manualRoutes.DELETE("/:id", manualHandler.Delete)
+}
 
 	port := os.Getenv("APP_PORT")
 
