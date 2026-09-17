@@ -30,6 +30,8 @@ func main() {
 
 	manualRepository :=
 		repositories.NewManualRepository(db)
+	
+	spjRepository := repositories.NewSPJRepository(db)
 
 	// SERVICE
 	authService :=
@@ -44,6 +46,9 @@ func main() {
 		)
 
 	manualService := services.NewManualService(manualRepository)
+	spjService := services.NewSPJService(
+	spjRepository,
+)
 
 	// HANDLER
 	authHandler :=
@@ -57,6 +62,12 @@ func main() {
 	manualHandler := handlers.NewManualHandler(manualService)
 	inaprocExcelHandler :=handlers.NewInaprocExcelHandler(inaprocService)
 	manualExcelHandler := handlers.NewManualExcelHandler(manualService)
+	spjHandler := handlers.NewSPJHandler(
+	spjService,
+	)	
+	spjExcelHandler := handlers.NewSPJExcelHandler(
+	spjService,
+	)
 
 
 	router := gin.Default()
@@ -95,6 +106,18 @@ func main() {
 	manualRoutes.PUT("/:id", manualHandler.Update)
 	manualRoutes.DELETE("/:id", manualHandler.Delete)
 }
+
+	spj := api.Group("/spj")
+	{
+		spj.GET("/export", spjExcelHandler.Export)
+		spj.POST("/import", spjExcelHandler.Import)
+		spj.POST("", spjHandler.Create)
+		spj.GET("", spjHandler.FindAll)
+		spj.GET("/:id", spjHandler.FindByID)
+		spj.PUT("/:id", spjHandler.Update)
+		spj.DELETE("/:id", spjHandler.Delete)
+	}
+
 
 	port := os.Getenv("APP_PORT")
 
