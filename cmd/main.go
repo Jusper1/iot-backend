@@ -54,12 +54,9 @@ func main() {
 			inaprocService,
 		)
 
-	inaprocExcelHandler :=
-		handlers.NewInaprocExcelHandler(
-			inaprocService,
-		)
-
 	manualHandler := handlers.NewManualHandler(manualService)
+	inaprocExcelHandler :=handlers.NewInaprocExcelHandler(inaprocService)
+	manualExcelHandler := handlers.NewManualExcelHandler(manualService)
 
 
 	router := gin.Default()
@@ -93,6 +90,8 @@ func main() {
 	manualRoutes.POST("", manualHandler.Create)
 	manualRoutes.GET("", manualHandler.GetAll)
 	manualRoutes.GET("/:id", manualHandler.GetByID)
+	manualRoutes.GET("/export", manualExcelHandler.Export)
+	manualRoutes.POST("/import", manualExcelHandler.Import)
 	manualRoutes.PUT("/:id", manualHandler.Update)
 	manualRoutes.DELETE("/:id", manualHandler.Delete)
 }
