@@ -33,6 +33,8 @@ func main() {
 		repositories.NewManualRepository(db)
 	
 	spjRepository := repositories.NewSPJRepository(db)
+	pembelianAlatRepository :=
+	repositories.NewPembelianAlatRepository(db)
 
 	// SERVICE
 	authService :=
@@ -50,6 +52,10 @@ func main() {
 	spjService := services.NewSPJService(
 	spjRepository,
 )
+pembelianAlatService :=
+	services.NewPembelianAlatService(
+		pembelianAlatRepository,
+	)
 
 	// HANDLER
 	authHandler :=
@@ -69,7 +75,14 @@ func main() {
 	spjExcelHandler := handlers.NewSPJExcelHandler(
 	spjService,
 	)
-
+pembelianAlatHandler :=
+	handlers.NewPembelianAlatHandler(
+		pembelianAlatService,
+	)
+	pembelianAlatExcelHandler :=
+	handlers.NewPembelianAlatExcelHandler(
+		pembelianAlatService,
+	)
 
 	router := gin.Default()
 
@@ -108,7 +121,7 @@ func main() {
 	api.Use(middleware.JWTAuth())
 
 	inaproc := api.Group("/inaproc")
-{
+	{
 	inaproc.POST("", inaprocHandler.Create)
 	inaproc.GET("", inaprocHandler.FindAll)
 	inaproc.GET("/export",inaprocExcelHandler.Export)
@@ -116,10 +129,10 @@ func main() {
 	inaproc.GET("/:id", inaprocHandler.FindByID)
 	inaproc.PUT("/:id", inaprocHandler.Update)
 	inaproc.DELETE("/:id", inaprocHandler.Delete)
-}
+	}
 
 	manualRoutes := api.Group("/pemesanan-manual")
-{
+	{
 	manualRoutes.POST("", manualHandler.Create)
 	manualRoutes.GET("", manualHandler.GetAll)
 	manualRoutes.GET("/:id", manualHandler.GetByID)
@@ -127,7 +140,7 @@ func main() {
 	manualRoutes.POST("/import", manualExcelHandler.Import)
 	manualRoutes.PUT("/:id", manualHandler.Update)
 	manualRoutes.DELETE("/:id", manualHandler.Delete)
-}
+	}
 
 	spj := api.Group("/spj")
 	{
@@ -140,6 +153,16 @@ func main() {
 		spj.DELETE("/:id", spjHandler.Delete)
 	}
 
+	pembelianAlat := api.Group("/pembelian-alat")
+	{
+	pembelianAlat.POST("",pembelianAlatHandler.Create)
+	pembelianAlat.GET("",pembelianAlatHandler.FindAll)
+	pembelianAlat.GET("/export",pembelianAlatExcelHandler.Export)
+	pembelianAlat.POST("/import",pembelianAlatExcelHandler.Import)
+	pembelianAlat.GET("/:id",pembelianAlatHandler.FindByID)
+	pembelianAlat.PUT("/:id",pembelianAlatHandler.Update)
+	pembelianAlat.DELETE("/:id",pembelianAlatHandler.Delete)
+	}
 
 	port := os.Getenv("APP_PORT")
 

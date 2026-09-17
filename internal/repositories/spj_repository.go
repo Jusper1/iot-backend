@@ -45,8 +45,12 @@ func (r *SPJRepository) FindByID(id uint) (*models.SPJOrder, error) {
 }
 
 func (r *SPJRepository) Update(data *models.SPJOrder) error {
-	return r.DB.Save(data).Error
+	return r.DB.
+		Model(&models.SPJOrder{}).
+		Where("id = ?",data.ID).
+		Updates(data).Error
 }
+
 
 func (r *SPJRepository) Delete(id uint) error {
 	return r.DB.Delete(&models.SPJOrder{}, id).Error
